@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <sstream>
 #include <iostream>
+#include <cassert>
 #include <string_view>
 
 using namespace Chess;
@@ -68,7 +69,7 @@ PieceType Utils::charToPieceType(char c) {
 }
 
 Move Utils::strToMove(std::string_view moveStr) {
-    _ASSERT(moveStr.length() >= 4);
+    assert(moveStr.length() >= 4);
     int rowStart = 7 - (moveStr[1] - '1');
     int rowEnd = 7 - (moveStr[3] - '1');
     int colStart = moveStr[0] - 'a';

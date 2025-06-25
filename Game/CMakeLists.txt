@@ -15,4 +15,8 @@ add_custom_command(
 	$<TARGET_FILE_DIR:Game>/assets
 )
 
-target_link_libraries(Game PRIVATE ChessEngine SDL2_image::SDL2_image SDL2::SDL2 SDL2::SDL2main)
+target_link_libraries(Game PRIVATE 
+    ChessEngine 
+    SDL2::SDL2 
+    $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static> 
+    SDL2::SDL2main)

@@ -1,6 +1,6 @@
 #include "Window.hpp"
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 Window::Window(std::string_view title, int width, int height) {
     init(title, width, height);

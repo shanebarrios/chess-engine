@@ -117,7 +117,7 @@ bool StreamHandler::handleLine(std::string_view message) {
 			const Curl post = Curl::post(url, { header }, { {"reason", "variant"} });
 			post.perform();
 		}
-		else if (!contains(k_supportedTimeControls, data["challenge"]["speed"])) {
+		else if (!contains(k_supportedTimeControls, data["challenge"]["speed"].get<std::string>())) {
 			LOG(data["challenge"]["id"], " has unsupported time control, rejecting");
 			const std::string url = std::format(k_declineChallengeURL, data["challenge"]["id"].get<std::string>());
 			const Curl post = Curl::post(url, { header }, { { "reason", "timeControl"} });
@@ -125,12 +125,12 @@ bool StreamHandler::handleLine(std::string_view message) {
 		}
 		else {
 			LOG("Adding ", data["challenge"]["id"], " to queue");
-			m_sharedState.enqueueChallenge(data["challenge"]["id"]);
+			m_sharedState.enqueueChallenge(data["challenge"]["id"].get<std::string>());
 		}
 	}
 	else if (data["type"] == "challengeCanceled") {
 		LOG("Challenge ", data["challenge"]["id"], " was cancelled, removing from queue");
-		m_sharedState.removeChallenge(data["challenges"]["id"]);
+		m_sharedState.removeChallenge(data["challenges"]["id"].get<std::string>());
 	}
 	return CURL_CONTINUE;
 }

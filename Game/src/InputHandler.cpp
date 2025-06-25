@@ -1,6 +1,6 @@
 #include "InputHandler.hpp"
 #include <algorithm>
-#include <SDL2/SDL_events.h>
+#include <SDL_events.h>
 #include "IMouseListener.hpp"
 
 InputHandler& InputHandler::instance() {

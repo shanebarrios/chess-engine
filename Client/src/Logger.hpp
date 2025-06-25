@@ -2,7 +2,10 @@
 
 #include <mutex>
 #include <iostream>
+#include <iomanip>
 #include <sstream>
+#include <thread>
+#include <chrono>
 #include <string_view>
 
 #define LOG(...) Logger::instance().log(__VA_ARGS__)
@@ -31,15 +34,17 @@ private:
 template <typename... Args>
 inline void Logger::log(Args&&... args) {
 	std::ostringstream ss{};
-	auto const time = std::chrono::current_zone()->to_local(std::chrono::system_clock::now());
-	ss << std::format("[{:%T}] ", time);
+	auto now = std::chrono::system_clock::now();
+	auto time_t_now = std::chrono::system_clock::to_time_t(now);
+	std::tm local_tm = *std::localtime(&time_t_now);
+	ss << std::put_time(&local_tm, "%H:%M:%S");
 
 	const std::thread::id curThreadId = std::this_thread::get_id();
 	if (curThreadId == g_mainThreadId) {
-		ss << "[main] ";
+		ss << " [main] ";
 	}
 	else {
-		ss << "[Thread " << curThreadId << "] ";
+		ss << " [Thread " << curThreadId << "] ";
 	}
 	(ss << ... << std::forward<Args>(args));
 	ss << '\n';

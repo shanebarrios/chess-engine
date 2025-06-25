@@ -1,4 +1,9 @@
-find_package(CURL CONFIG REQUIRED)
+find_package(CURL CONFIG QUIET)
+
+if(NOT CURL_FOUND)
+    find_package(CURL REQUIRED)
+endif()
+
 find_package(nlohmann_json CONFIG REQUIRED)
 
 file(GLOB SRC_FILES

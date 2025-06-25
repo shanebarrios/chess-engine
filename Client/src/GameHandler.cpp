@@ -50,7 +50,8 @@ void GameHandler::run() {
 			return CURL_BREAK;
 		}
 
-		const std::vector<std::string> split = Chess::Utils::split(state["moves"]);
+		const std::string& moveStr = state["moves"].get<std::string>();
+		const std::vector<std::string> split = Chess::Utils::split(moveStr);
 
 		if (split.size() > numMoves) {
 			for (int i = numMoves; i < split.size(); i++) {
@@ -71,7 +72,7 @@ void GameHandler::run() {
 }
 
 bool GameHandler::sendMove() {
-	const int thinkTimeMS = min(5000, static_cast<int>(k_thinkMultiplier * m_timePerSide));
+	const int thinkTimeMS = std::min(5000, static_cast<int>(k_thinkMultiplier * m_timePerSide));
 	const Chess::Move move = m_searcher.getMove(m_position, thinkTimeMS);
 	const std::string url = std::format(k_makeMoveURL, m_id, Chess::Utils::moveToStr(move));
 	const std::string_view header = Authorization::instance().getAuthorizationHeader();
