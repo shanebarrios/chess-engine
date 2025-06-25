@@ -98,39 +98,41 @@ bool StreamHandler::handleLine(std::string_view message) {
 	}
 
 	if (data["type"] == "gameStart") {
-		LOG("Game ", data["game"]["gameId"], " started");
 		const std::string& fen = data["game"]["fen"];
 		const Chess::PieceColor color = data["game"]["color"] == "white" ? Chess::PieceColor::White : Chess::PieceColor::Black;
 		const std::string& id = data["game"]["gameId"];
 		const int timePerSide = data["game"]["secondsLeft"].is_number_integer()
 			? data["game"]["secondsLeft"].get<int>() * 1000
 			: 1000000;
+			LOG("Game {} started", id);
 		m_sharedState.notifyGameStart({ .startFen = fen, .color = color, .id = id, .timePerSide = timePerSide });
 	}
 	else if (data["type"] == "gameFinish") {
 	}
 	else if (data["type"] == "challenge") {
-		LOG("Received Challenge ", data["challenge"]["id"], " from ", data["challenge"]["challenger"]["name"]);
+		const std::string challengeId = data["challenge"]["id"].get<std::string>();
+		LOG("Received challenge {} from {}", challengeId, data["challenge"]["challenger"]["name"].get<std::string>());
 		if (data["challenge"]["variant"]["key"] != "standard") {
-			LOG(data["challenge"]["id"], " has unsupported variant, rejecting");
-			const std::string url = std::format(k_declineChallengeURL, data["challenge"]["id"].get<std::string>());
+			LOG("{} has unsupported variant, rejecting", challengeId);
+			const std::string url = std::format(k_declineChallengeURL, challengeId);
 			const Curl post = Curl::post(url, { header }, { {"reason", "variant"} });
 			post.perform();
 		}
 		else if (!contains(k_supportedTimeControls, data["challenge"]["speed"].get<std::string>())) {
-			LOG(data["challenge"]["id"], " has unsupported time control, rejecting");
-			const std::string url = std::format(k_declineChallengeURL, data["challenge"]["id"].get<std::string>());
+			LOG("{} has unsupported time control, rejecting", challengeId);
+			const std::string url = std::format(k_declineChallengeURL, challengeId);
 			const Curl post = Curl::post(url, { header }, { { "reason", "timeControl"} });
 			post.perform();
 		}
 		else {
-			LOG("Adding ", data["challenge"]["id"], " to queue");
-			m_sharedState.enqueueChallenge(data["challenge"]["id"].get<std::string>());
+			LOG("Adding {} to queue", challengeId);
+			m_sharedState.enqueueChallenge(challengeId);
 		}
 	}
 	else if (data["type"] == "challengeCanceled") {
-		LOG("Challenge ", data["challenge"]["id"], " was cancelled, removing from queue");
-		m_sharedState.removeChallenge(data["challenges"]["id"].get<std::string>());
+		const std::string challengeId = data["challenge"]["id"].get<std::string>();
+		LOG("Challenge {} was cancelled, removing from queue", challengeId);
+		m_sharedState.removeChallenge(challengeId);
 	}
 	return CURL_CONTINUE;
 }

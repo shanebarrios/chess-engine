@@ -2,10 +2,10 @@
 
 #include <mutex>
 #include <iostream>
-#include <iomanip>
 #include <sstream>
 #include <thread>
 #include <chrono>
+#include <format>
 #include <string_view>
 
 #define LOG(...) Logger::instance().log(__VA_ARGS__)
@@ -20,7 +20,7 @@ public:
 	}
 
 	template <typename... Args>
-	void log(Args&&... args);
+	void log(std::string_view format, Args&&... args);
 
 	void setStream(std::ostream& out) { m_out = &out; }
 
@@ -32,24 +32,21 @@ private:
 };
 
 template <typename... Args>
-inline void Logger::log(Args&&... args) {
-	std::ostringstream ss{};
-	auto now = std::chrono::system_clock::now();
-	auto time_t_now = std::chrono::system_clock::to_time_t(now);
-	std::tm local_tm = *std::localtime(&time_t_now);
-	ss << std::put_time(&local_tm, "%H:%M:%S");
+inline void Logger::log(std::string_view format, Args&&... args) {
+	static constexpr std::string_view logFormat = "[{:%T}] [thread {}] {}\n";
 
-	const std::thread::id curThreadId = std::this_thread::get_id();
-	if (curThreadId == g_mainThreadId) {
-		ss << " [main] ";
-	}
-	else {
-		ss << " [Thread " << curThreadId << "] ";
-	}
-	(ss << ... << std::forward<Args>(args));
-	ss << '\n';
+	const auto time = std::chrono::system_clock::now();
+	std::ostringstream ss {};
+	ss << std::this_thread::get_id();
 	{
-		std::lock_guard lock{ m_mutex };
-		(*m_out) << ss.str();
+		std::lock_guard lock {m_mutex};
+		if constexpr (sizeof...(args) > 0)
+		{
+			(*m_out) << std::format(logFormat, time, ss.str(), std::vformat(format, std::make_format_args(std::forward<Args>(args)...)));
+		}
+		else
+		{
+			(*m_out) << std::format(logFormat, time, ss.str(), format);
+		}
 	}
 }

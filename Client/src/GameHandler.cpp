@@ -20,7 +20,7 @@ void GameHandler::operator()() {
 }
 
 void GameHandler::run() {
-	LOG("Handling game ", m_id);
+	LOG("Handling game {}", m_id);
 	int numMoves = 0;
 
 	const std::string url = std::format(k_streamGameURL, m_id);
@@ -55,7 +55,7 @@ void GameHandler::run() {
 
 		if (split.size() > numMoves) {
 			for (int i = numMoves; i < split.size(); i++) {
-				LOG("Received move ", split[i]);
+				LOG("Received move {}", split[i]);
 				m_position.makeMove(Chess::Utils::strToMove(split[i]));
 			}
 			numMoves = static_cast<int>(split.size());
@@ -68,7 +68,7 @@ void GameHandler::run() {
 		return CURL_CONTINUE;
 		});
 	curl.perform();
-	LOG("Game ", m_id, " finished");
+	LOG("Game {} finished", m_id);
 }
 
 bool GameHandler::sendMove() {
@@ -83,11 +83,11 @@ bool GameHandler::sendMove() {
 		return false;
 	}
 	else if (response.responseCode != 200) {
-		LOG("Move ", Chess::Utils::moveToStr(move), " was invalid, failed to send to server");
+		LOG("Move {} was invalid, failed to send to server", Chess::Utils::moveToStr(move));
 		return false;
 	}
 	else {
-		LOG("Sent move ", Chess::Utils::moveToStr(move), " to server");
+		LOG("Sent move {} to server", Chess::Utils::moveToStr(move));
 		return true;
 	}
 }
