@@ -40,16 +40,12 @@ First, clone the repository
 git clone https://github.com/shanebarrios/chess-engine
 cd chess-engine
 ```
-On a Windows machine with MSVC and vcpkg properly setup, you can simply run
+Then run
 ```
-cmake --preset=x64-release
+cmake -Bbuild -S. -DCMAKE_TOOLCHAIN_FILE="<path to vcpkg root>/scripts/buildsystems/vcpkg.cmake"
+cmake --build build
 ```
-to build in release mode (recommended) or
-```
-cmake --preset=x64-debug
-```
-for debug. Alternatively, run
-```
-cmake -Bbuild -S. -DCMAKE_BUILD_TYPE
-```
+Alternatively, there are presets set in CMakePresets.json that work well with Visual Studio. 
+Afterwards, the Chess and Client executables will generate within a "bin" directory in build. 
+Note that you must set an environment variable LICHESS_API_TOKEN to a valid api token to run the Client program.
 
