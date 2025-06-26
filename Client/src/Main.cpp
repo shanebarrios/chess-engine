@@ -8,11 +8,11 @@
 std::thread::id g_mainThreadId;
 
 int main(int argc, char** argv) {
-	g_mainThreadId = std::this_thread::get_id();
-
 	LOG("Initializing chess engine");
 	Chess::init();
 	Curl::init();
+
+	g_mainThreadId = std::this_thread::get_id();
 	
 	StreamHandler handler{};
 

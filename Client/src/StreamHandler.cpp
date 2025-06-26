@@ -104,7 +104,7 @@ bool StreamHandler::handleLine(std::string_view message) {
 		const int timePerSide = data["game"]["secondsLeft"].is_number_integer()
 			? data["game"]["secondsLeft"].get<int>() * 1000
 			: 1000000;
-			LOG("Game {} started", id);
+			LOG("Game ", id, " started");
 		m_sharedState.notifyGameStart({ .startFen = fen, .color = color, .id = id, .timePerSide = timePerSide });
 	}
 	else if (data["type"] == "gameFinish") {
@@ -113,25 +113,25 @@ bool StreamHandler::handleLine(std::string_view message) {
 		const std::string challengeId = data["challenge"]["id"].get<std::string>();
 		LOG("Received challenge {} from {}", challengeId, data["challenge"]["challenger"]["name"].get<std::string>());
 		if (data["challenge"]["variant"]["key"] != "standard") {
-			LOG("{} has unsupported variant, rejecting", challengeId);
+			LOG(challengeId, " has unsupported variant, rejecting");
 			const std::string url = std::format(k_declineChallengeURL, challengeId);
 			const Curl post = Curl::post(url, { header }, { {"reason", "variant"} });
 			post.perform();
 		}
 		else if (!contains(k_supportedTimeControls, data["challenge"]["speed"].get<std::string>())) {
-			LOG("{} has unsupported time control, rejecting", challengeId);
+			LOG(challengeId, " has unsupported time control, rejecting");
 			const std::string url = std::format(k_declineChallengeURL, challengeId);
 			const Curl post = Curl::post(url, { header }, { { "reason", "timeControl"} });
 			post.perform();
 		}
 		else {
-			LOG("Adding {} to queue", challengeId);
+			LOG("Adding ", challengeId, " to queue");
 			m_sharedState.enqueueChallenge(challengeId);
 		}
 	}
 	else if (data["type"] == "challengeCanceled") {
 		const std::string challengeId = data["challenge"]["id"].get<std::string>();
-		LOG("Challenge {} was cancelled, removing from queue", challengeId);
+		LOG("Challenge ", challengeId, " was cancelled, removing from queue");
 		m_sharedState.removeChallenge(challengeId);
 	}
 	return CURL_CONTINUE;
