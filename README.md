@@ -47,5 +47,5 @@ cmake --build build
 ```
 Alternatively, there are presets set in `CMakePresets.json` that work well with Visual Studio. 
 Afterwards, the `Chess` and `Client` executables will generate within a `build/bin`. 
-Note that you must set an environment variable `LICHESS_API_TOKEN` to a valid api token to run the Client program.
+Note that you must set an environment variable `LICHESS_API_TOKEN` to a valid api token to run the `Client` program.
 
