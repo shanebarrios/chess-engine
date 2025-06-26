@@ -29,7 +29,7 @@ As of now, the bot has not played any rated games, but a rough estimate of its s
 
 ### Prerequisites
 
-You will need CMake, a C++20 compatible compiler, and a package manager (the setup guide assumes you are using vcpkg). You should be able to use other package managers, but it's up to you to make sure CMake can find the necessary packages. [Instructions for setting up vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started?pivots=shell-powershell)
+You will need CMake, a C++20 compatible compiler, and a package manager (the setup guide assumes you are using vcpkg). You should be able to use other package managers, but it's up to you to make sure CMake can find the necessary packages. [Instructions for setting up vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started?pivots=shell-powershell).
 
 The applications have been tested with MSVC on Windows and clang on macOS. 
 
@@ -46,6 +46,7 @@ cmake -Bbuild -S. -DCMAKE_TOOLCHAIN_FILE="<path to vcpkg root>/scripts/buildsyst
 cmake --build build
 ```
 Alternatively, there are presets set in `CMakePresets.json` that work well with Visual Studio. 
-Afterwards, the `Chess` and `Client` executables will generate within a `build/bin`. 
-Note that you must set an environment variable `LICHESS_API_TOKEN` to a valid api token to run the `Client` program.
+
+After running the build command, the `Chess` and `Client` executables will generate within `build/bin`. 
+Note that you must set the environment variable `LICHESS_API_TOKEN` in order to run the `Client` program.
 
